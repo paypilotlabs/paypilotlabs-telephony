@@ -1,6 +1,6 @@
 # PayPilotLabs Telephony
 
-Phone integration used by PayPilotLabs Service: call logging and click-to-call through supported providers.
+Phone integration used by PayPilotLabs Helpdesk: call logging and click-to-call through supported providers.
 
 By [PayPilotLabs](https://paypilotlabs.com). Support and requests: https://paypilotlabs.com/roadmap/
 
