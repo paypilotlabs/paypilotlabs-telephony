@@ -4,7 +4,11 @@ import requests
 from frappe import _
 from frappe.integrations.utils import create_request_log
 
-from telephony.utils import link_call_with_contact, link_call_with_doc
+from telephony.utils import (
+    link_call_with_contact,
+    link_call_with_doc,
+    require_desk_user,
+)
 
 # Endpoints for webhook
 
@@ -71,6 +75,7 @@ def handle_request(**kwargs):
 def make_a_call(
     to_number, from_number=None, caller_id=None, link_doctype=None, link_docname=None
 ):
+    require_desk_user()
     if not is_integration_enabled():
         frappe.throw(
             _("Please setup Exotel intergration"), title=_("Integration Not Enabled")
@@ -78,15 +83,22 @@ def make_a_call(
 
     endpoint = get_exotel_endpoint("Calls/connect.json?details=true")
 
-    if not from_number:
-        from_number = frappe.get_value(
-            "TP Telephony Agent", {"user": frappe.session.user}, "mobile_no"
+    # The caller's own numbers come from their agent record; a request may only repeat them,
+    # otherwise anyone could bill calls from any number to the company's Exotel account.
+    agent_mobile_no, agent_exotel_number = frappe.get_value(
+        "TP Telephony Agent",
+        {"user": frappe.session.user},
+        ["mobile_no", "exotel_number"],
+    ) or (None, None)
+    if (from_number and from_number != agent_mobile_no) or (
+        caller_id and caller_id != agent_exotel_number
+    ):
+        frappe.throw(
+            _("You can only call from the numbers set in your Telephony Agent"),
+            frappe.PermissionError,
         )
-
-    if not caller_id:
-        caller_id = frappe.get_value(
-            "TP Telephony Agent", {"user": frappe.session.user}, "exotel_number"
-        )
+    from_number = agent_mobile_no
+    caller_id = agent_exotel_number
 
     if not caller_id:
         frappe.throw(

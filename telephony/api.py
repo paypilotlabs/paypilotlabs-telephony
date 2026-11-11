@@ -4,6 +4,7 @@ from telephony.utils import (
     _get_contact_by_phone_number,
     link_call_with_contact,
     parse_call_log,
+    require_desk_user,
 )
 
 
@@ -21,6 +22,10 @@ def is_call_integration_enabled():
 
 @frappe.whitelist()
 def set_default_calling_medium(medium):
+    require_desk_user()
+    if medium not in ("Twilio", "Exotel"):
+        frappe.throw(frappe._("Unknown calling medium: {0}").format(medium))
+
     if not frappe.db.exists("TP Telephony Agent", frappe.session.user):
         frappe.get_doc(
             {
@@ -40,6 +45,7 @@ def set_default_calling_medium(medium):
 @frappe.whitelist()
 def get_contact_by_phone_number(phone_number):
     """Get contact by phone number."""
+    require_desk_user()
     return _get_contact_by_phone_number(phone_number)
 
 
@@ -70,6 +76,7 @@ def create_call_log(
     receiver,
     links,
 ):
+    require_desk_user()
     call_log = frappe.get_doc(
         {
             "doctype": "TP Call Log",
@@ -99,6 +106,7 @@ def create_call_log(
 
 @frappe.whitelist()
 def get_call_log(name):
+    require_desk_user()
     call = frappe.get_cached_doc(
         "TP Call Log",
         name,
@@ -122,6 +130,7 @@ def get_call_log(name):
 
 @frappe.whitelist()
 def create_telephony_agent():
+    require_desk_user()
     if not frappe.db.exists("TP Telephony Agent", {"user": frappe.session.user}):
         agent = frappe.get_doc(
             {
