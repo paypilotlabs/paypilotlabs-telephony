@@ -9,8 +9,10 @@ from twilio.rest import Client
 
 class TPTwilioSettings(Document):
     friendly_resource_name = (
-        "Frappe Telephony"  # System creates TwiML app & API keys with this name.
+        "PayPilotLabs Telephony"  # System creates TwiML app & API keys with this name.
     )
+    # Name used before the PayPilotLabs rebrand; found again so old accounts get no duplicate app.
+    legacy_resource_name = "Frappe Telephony"
 
     def validate(self):
         old_account_sid = frappe.db.get_single_value(
@@ -80,13 +82,9 @@ class TPTwilioSettings(Document):
     def get_application(self, twilio, friendly_name=None):
         """Get TwiML App from twilio account if exists."""
         friendly_name = friendly_name or self.friendly_resource_name
-        applications = twilio.applications.list(friendly_name)
-        default_application = twilio.applications.list(self.friendly_resource_name)
-
-        if applications:
-            return applications[0]
-        if default_application:
-            return default_application[0]
+        for name in (friendly_name, self.friendly_resource_name, self.legacy_resource_name):
+            if applications := twilio.applications.list(friendly_name=name):
+                return applications[0]
         return None
 
     def create_application(self, twilio, friendly_name=None):

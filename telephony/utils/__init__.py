@@ -7,6 +7,17 @@ from phonenumbers import PhoneNumberFormat as PNF
 from pypika.functions import Replace
 
 
+def require_desk_user():
+    """Products such as Helpdesk let logged-in portal users reach telephony.* methods,
+    so methods meant for staff must refuse anyone who is not a desk (System) user."""
+    if (
+        frappe.session.user == "Guest"
+        or frappe.get_cached_value("User", frappe.session.user, "user_type")
+        != "System User"
+    ):
+        frappe.throw(frappe._("Not permitted"), frappe.PermissionError)
+
+
 def parse_phone_number(phone_number, default_country="IN"):
     try:
         # Parse the number
@@ -114,14 +125,10 @@ def get_contact(phone_number):
     if not phone_number:
         return {"mobile_no": phone_number}
 
-    cleaned_number = (
-        phone_number.strip()
-        .replace(" ", "")
-        .replace("-", "")
-        .replace("(", "")
-        .replace(")", "")
-        .replace("+", "")
-    )
+    # Digits only: anything else (e.g. % or _) would act as a LIKE wildcard.
+    cleaned_number = "".join(c for c in str(phone_number) if c.isdigit())
+    if not cleaned_number:
+        return {"mobile_no": phone_number}
 
     # Check if the number is associated with a contact
     Contact = frappe.qb.DocType("Contact")

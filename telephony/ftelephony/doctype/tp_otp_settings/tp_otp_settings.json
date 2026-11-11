@@ -33,7 +33,7 @@
   },
   {
    "default": "0",
-   "description": "Sends OTPs over email using Frappe's configured outgoing Email Account, independent of Twilio.",
+   "description": "Sends OTPs over email using your configured outgoing Email Account, independent of Twilio.",
    "fieldname": "enable_email_otp",
    "fieldtype": "Check",
    "label": "Enable Email OTP"

@@ -76,8 +76,11 @@ def voice(**kwargs):
     if not twilio:
         return
 
-    assert args.AccountSid == twilio.account_sid
-    assert args.ApplicationSid == twilio.application_sid
+    if (
+        args.AccountSid != twilio.account_sid
+        or args.ApplicationSid != twilio.application_sid
+    ):
+        frappe.throw(_("Unknown Twilio account or application"), frappe.PermissionError)
 
     # Generate TwiML instructions to make a call
     from_number = _get_caller_number(args.Caller)
