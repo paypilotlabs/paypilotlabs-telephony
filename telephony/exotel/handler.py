@@ -135,10 +135,14 @@ def make_a_call(
         )
         response.raise_for_status()
     except requests.exceptions.HTTPError:
-        if exc := response.json().get("RestException"):
-            frappe.throw(
-                bleach.linkify(exc.get("Message")), title=_("Exotel Exception")
-            )
+        try:
+            exc = response.json().get("RestException") or {}
+        except ValueError:
+            exc = {}
+        frappe.throw(
+            bleach.linkify(exc.get("Message") or _("Exotel could not place the call.")),
+            title=_("Exotel Exception"),
+        )
     else:
         res = response.json()
         call_payload = res.get("Call", {})
