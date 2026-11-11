@@ -3,7 +3,10 @@ name = "telephony"
 authors = [
     { name = "Frappe Technologies Pvt. Ltd.", email = "pratik@frappe.io"}
 ]
-description = "Telephony for Frappe apps"
+maintainers = [
+    { name = "PayPilotLabs" }
+]
+description = "Phone integration for PayPilotLabs products: calling, call logs, SMS and OTP"
 requires-python = ">=3.10"
 readme = "README.md"
 dynamic = ["version"]
@@ -12,6 +15,11 @@ dependencies = [
     "twilio==8.5.0",
     "bleach~=6.3.0",
 ]
+
+[project.urls]
+Homepage = "https://paypilotlabs.com"
+Source = "https://github.com/paypilotlabs/paypilotlabs-telephony"
+Issues = "https://github.com/paypilotlabs/paypilotlabs-telephony/issues"
 
 [build-system]
 requires = ["flit_core >=3.4,<4"]

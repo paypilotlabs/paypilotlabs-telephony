@@ -4,7 +4,7 @@ from telephony.brand import BRAND
 app_title = BRAND["product_name"]
 app_logo_url = BRAND["logo"]
 app_publisher = BRAND["company"]
-app_description = "Telephony for Frappe apps"
+app_description = BRAND["description"]
 app_email = BRAND["email"]
 app_license = "agpl-3.0"
 

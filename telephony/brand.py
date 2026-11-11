@@ -7,6 +7,7 @@ apps-screen tile. Logo files live in telephony/public/images/paypilotlabs/.
 BRAND = {
 	"product_name": "PayPilotLabs Telephony",
 	"short_name": "Telephony",
+	"description": "Phone integration for PayPilotLabs products: calling, call logs, SMS and OTP",
 	"company": "PayPilotLabs",
 	"website": "https://paypilotlabs.com",
 	"support_url": "https://paypilotlabs.com/roadmap/",
